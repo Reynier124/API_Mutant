@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
+import logging
 
 
 from models.base_model import base
@@ -18,6 +19,12 @@ POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 POSTGRES_DB = os.getenv('POSTGRES_DB')
 POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+
+logging.info(f"HOST: {POSTGRES_HOST}")
+logging.info(f"PORT: {POSTGRES_PORT}")
+logging.info(f"DB: {POSTGRES_DB}")
+logging.info(f"USER: {POSTGRES_USER}")
+logging.info(f"PASSWORD: {POSTGRES_PASSWORD}")
 
 DATABASE_URI = f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
