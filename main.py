@@ -78,8 +78,8 @@ def run_app(fastapi_app: FastAPI):
 
 app = create_fastapi_app()
 
-
+"""
 if __name__ == "__main__":
     db = Database()
     db.create_tables()
-    run_app(app)
+    run_app(app)"""
