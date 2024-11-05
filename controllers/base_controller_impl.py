@@ -1,43 +1,49 @@
 from typing import Type, List
-from fastapi import APIRouter, HTTPException
+from flask import Blueprint, jsonify, request, abort
 from controllers.base_controller import BaseController
 from schemas.base_schema import BaseSchema
 from services.base_service import BaseService
 
-
 class BaseControllerImpl(BaseController):
     """Base controller implementation."""
 
-    def __init__(self, schema: Type[BaseSchema], service: BaseService,):
+    def __init__(self, schema: Type[BaseSchema], service: BaseService):
         self.service = service
         self.schema = schema
-        self.router = APIRouter()
+        self.blueprint = Blueprint('base', __name__)
 
-        @self.router.get("/", response_model=List[schema])
-        async def get_all():
-            return self.get_all()
+        self.blueprint.add_url_rule("/", view_func=self.get_all, methods=["GET"])
+        self.blueprint.add_url_rule("/<int:id_key>", view_func=self.get_one, methods=["GET"])
+        self.blueprint.add_url_rule("/", view_func=self.save, methods=["POST"])
+        self.blueprint.add_url_rule("/<int:id_key>", view_func=self.update, methods=["PUT"])
+        self.blueprint.add_url_rule("/<int:id_key>", view_func=self.delete, methods=["DELETE"])
 
-        @self.router.get("/{id_key}", response_model=schema)
-        async def get_one(id_key: int):
-            item = self.get_one(id_key)
+        def get_all(self):
+            items = self.service.get_all()
+            return jsonify([self.schema.from_orm(item).dict() for item in items])
+
+        def get_one(self, id_key: int):
+            item = self.service.get_one(id_key)
             if item is None:
-                raise HTTPException(status_code=404, detail="Item not found")
-            return item
+                abort(404, description="Item not found")
+            return self.schema.from_orm(item).dict()
 
-        @self.router.post("/", response_model=schema)
-        async def save(schema_in: schema):
-            return self.save(schema_in)
+        def save(self):
+            schema_in = self.schema(**request.get_json())
+            item = self.service.save(schema_in)
+            return self.schema.from_orm(item).dict()
 
-        @self.router.put("/{id_key}", response_model=schema)
-        async def update(id_key: int, schema_in: schema):
-            item = self.update(id_key, schema_in)
+        def update(self, id_key: int):
+            schema_in = self.schema(**request.get_json())
+            item = self.service.update(id_key, schema_in)
             if item is None:
-                raise HTTPException(status_code=404, detail="Item not found")
-            return item
+                abort(404, description="Item not found")
+            return self.schema.from_orm(item).dict()
 
-        @self.router.delete("/{id_key}")
-        async def delete(id_key: int):
-            self.delete(id_key)
+        def delete(self, id_key: int):
+            self.service.delete(id_key)
+            return "", 204
+
 
     @property
     def service(self) -> BaseService:
