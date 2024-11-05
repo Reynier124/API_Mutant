@@ -12,7 +12,6 @@ class DnaController(BaseControllerImpl):
         super().__init__(DnaSchema, DnaService())
         self.mutant_service = MutantService()
         self.normal_service = NormalService()
-        print("DnaController initialized")
 
     def save_dna(self, dna: list[str], dna_type: str) -> None:
         logger = logging.getLogger(__name__)

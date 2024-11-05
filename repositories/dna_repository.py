@@ -6,4 +6,3 @@ from schemas.dna_schema import DnaSchema
 class DnaRepository(BaseRepositoryImpl):
     def __init__(self):
         super().__init__(DnaModel, DnaSchema)
-        print("DnaRepository initialized")

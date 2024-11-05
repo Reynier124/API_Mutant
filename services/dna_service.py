@@ -11,7 +11,6 @@ class DnaService(BaseServiceImpl):
 
     def __init__(self):
         super().__init__(repository=DnaRepository(), model=DnaModel, schema=DnaSchema)
-        print("DnaService initialized")
 
     def save_dna(self, dna: list[str]) -> int:
         logger = logging.getLogger(__name__)
