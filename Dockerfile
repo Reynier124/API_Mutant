@@ -12,6 +12,16 @@ COPY --from=builder /root/.local /root/.local
 
 ENV PATH=/root/.local/bin:$PATH
 
+RUN apt-get update && apt-get install -y postgresql-client
+
+ENV POSTGRES_USER=myuser
+ENV POSTGRES_PASSWORD=mypassword
+ENV POSTGRES_DB=mydb
+
+RUN psql -U $POSTGRES_USER -c "CREATE DATABASE $POSTGRES_DB;"
+
+RUN psql -U $POSTGRES_USER -d $POSTGRES_DB -f /app/schema.sql
+
 WORKDIR /app
 
 COPY . .
